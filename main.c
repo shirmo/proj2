@@ -156,7 +156,7 @@ int verticesAmountValidity(const char *ver)
     return 0;
 }
 
-int children_parse(const char *ver, struct Vertex *vertices, int index, int Vnum)
+int children_parse(const char *ver, struct Vertex *vertices, int index, int Vnum) //must handle end of line
 {
     int* children = NULL;
     children = (int*) malloc(Vnum* sizeof(int));
