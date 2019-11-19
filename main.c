@@ -16,7 +16,7 @@ struct Vertex
 {
     int isLeaf;
     int isRoot;
-    struct Vertex *children;
+    int *children;
     int amountOfChildren;
     // If is root - amount of Children == v.degree else, amount of Children +1 == v.degree
     int degree;
@@ -24,7 +24,7 @@ struct Vertex
 
 
 int verticesAmountValidity(const char *ver);
-int children_parse(const char *ver, struct Vertex *vertices, int index);
+int children_parse(const char *ver, struct Vertex *vertices, int index, int Vnum);
 //int const *Vnum;  //Number of E = Vnum - 1
 
 int main(int argc, char* argv[])
@@ -73,12 +73,38 @@ int main(int argc, char* argv[])
     struct Vertex vertices[Vnum];
     for (int i = 0; i < Vnum; ++i) {
         fgets(parse, 1024, ptr);
-        children_parse(parse, vertices, i);
-        printf("node %d has %d children",i, vertices[i].amountOfChildren);
+        int validation = children_parse(parse, vertices, i, Vnum);
+        if(validation)
+        {
+            fprintf(stderr, INVALID_INPUT);
+            return EXIT_FAILURE;
+        }
+        // to be remove ***************************************************************************************
+        printf("node %d has %d children\n",i, vertices[i].amountOfChildren);
+        for (int j = 0; j < vertices[i].amountOfChildren; ++j)
+        {
+            printf("child of %d is %d\n",i,vertices[i].children[j]);
+        }
+        if(vertices[i].isLeaf)
+        {printf("node %d is a leaf\n",i);}
+        // to be remove ***************************************************************************************
+
+        for (int j = 0; j < vertices[i].amountOfChildren; ++j) {
+            // checks if children are in Vnum scope + checks if a child equals to it's father
+            if(vertices[i].children[j] < 0 || vertices[i].children[j]>=Vnum || vertices[i].children[j] == i)
+            {
+                fprintf(stderr, INVALID_INPUT);
+                return EXIT_FAILURE;
+            }
+        }
+        fgets(parse, 1024, ptr);
+        printf("%s", parse);
     }
 
 
-
+    for (int k = 0; k < Vnum; ++k) {
+        free(vertices[k].children);
+    }
     return END_OF_PROGRAM;
 }
 
@@ -105,8 +131,15 @@ int verticesAmountValidity(const char *ver)
     return 0;
 }
 
-int children_parse(const char *ver, struct Vertex * vertices, int index)
+int children_parse(const char *ver, struct Vertex *vertices, int index, int Vnum)
 {
+    int* children = NULL;
+    children = (int*) malloc(Vnum* sizeof(int));
+    if (children ==NULL)
+    {
+        fprintf(stderr, "Memory allocation problem");
+        return EXIT_FAILURE;
+    }
     if (ver[0]=='-')
     {
         vertices[index].isLeaf = 1;
@@ -119,7 +152,7 @@ int children_parse(const char *ver, struct Vertex * vertices, int index)
     int ind = 0;
     for (int i = 0; i < (int) strlen(ver); ++i)
     {
-        while(ver[i]!=' ')
+        while(ver[i]!=' ' && ver[i]!=END_OF_LINE)
         {
             if(isdigit(ver[i])==0)
             {
@@ -128,10 +161,11 @@ int children_parse(const char *ver, struct Vertex * vertices, int index)
             i++;
         }
         int child = (int) strtol(eptr, &eptr, 10);
-        vertices[index].children[ind] = vertices[child];
+        children[ind] = child;
         ind++;
     }
     vertices[index].isLeaf = 0;
+    vertices[index].children = children;
     vertices[index].amountOfChildren = ind;
     return 0;
 }
