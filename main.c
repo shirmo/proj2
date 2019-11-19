@@ -10,6 +10,9 @@
 #define VERTEX_1_PLACE 2
 #define VERTEX_2_PLACE 3
 #define END_OF_LINE '\n'
+#define IS_LEAF_1 "-\n"
+#define IS_LEAF_2 "-"
+#define LINE_SIZE 1024
 
 
 struct Vertex
@@ -20,6 +23,7 @@ struct Vertex
     int amountOfChildren;
     // If is root - amount of Children == v.degree else, amount of Children +1 == v.degree
     int degree;
+    int father;
 } Vertex;
 
 
@@ -41,15 +45,17 @@ int main(int argc, char* argv[])
     ptr = fopen(argv[1],"r");
     if (ptr == NULL)
     {
+        printf("1\n");
         fprintf(stderr, INVALID_INPUT);
         return EXIT_FAILURE;
     }
 
-    char parse[1024];
+    char parse[LINE_SIZE];
     //FIRST_LINE - NUM OF VERTEX (check if is digit)
-    fgets(parse, 1024, ptr);
+    fgets(parse, LINE_SIZE, ptr);
    // Parsing first line;
     if(verticesAmountValidity(parse)) {
+        printf("2\n");
         fprintf(stderr, INVALID_INPUT);
         return EXIT_FAILURE;
     }
@@ -59,6 +65,7 @@ int main(int argc, char* argv[])
     //vertex argument validity check
     if(verticesAmountValidity(argv[VERTEX_1_PLACE]) || verticesAmountValidity(argv[VERTEX_2_PLACE]))
     {
+        printf("3\n");
         fprintf(stderr, INVALID_INPUT);
         return EXIT_FAILURE;
     }
@@ -66,43 +73,61 @@ int main(int argc, char* argv[])
     V2 = (int) strtol(argv[VERTEX_2_PLACE],&eptr, 10);
     if(V1<0 || V1>=Vnum || V2<0 || V2>=Vnum)     // If argument given nodes aren't in Vertices scope, leave program
     {
+        printf("4\n");
         fprintf(stderr, INVALID_INPUT);
         return EXIT_FAILURE;
     }
     //initiating a vertices array
     struct Vertex vertices[Vnum];
+    int line =0;
     for (int i = 0; i < Vnum; ++i) {
-        fgets(parse, 1024, ptr);
-        int validation = children_parse(parse, vertices, i, Vnum);
-        if(validation)
+        line++;
+        fgets(parse, LINE_SIZE, ptr);
+        int validation = children_parse(parse, vertices, i, Vnum); //parsing children
+        if(validation) // checking if children parse succeeded
         {
+            printf("%d\n", line);
+            printf("5\n");
             fprintf(stderr, INVALID_INPUT);
             return EXIT_FAILURE;
         }
-        // to be remove ***************************************************************************************
-        printf("node %d has %d children\n",i, vertices[i].amountOfChildren);
-        for (int j = 0; j < vertices[i].amountOfChildren; ++j)
-        {
-            printf("child of %d is %d\n",i,vertices[i].children[j]);
-        }
-        if(vertices[i].isLeaf)
-        {printf("node %d is a leaf\n",i);}
-        // to be remove ***************************************************************************************
-
         for (int j = 0; j < vertices[i].amountOfChildren; ++j) {
             // checks if children are in Vnum scope + checks if a child equals to it's father
             if(vertices[i].children[j] < 0 || vertices[i].children[j]>=Vnum || vertices[i].children[j] == i)
             {
+                printf("6\n");
                 fprintf(stderr, INVALID_INPUT);
                 return EXIT_FAILURE;
             }
+            else
+            {
+                vertices[vertices[i].children[j]].father = i;
+            }
         }
-        fgets(parse, 1024, ptr);
-        printf("%s", parse);
+    }
+    // checks for extra lines
+    if (fgets(parse, LINE_SIZE, ptr) !=NULL)
+    {
+        printf("7\n");
+        fprintf(stderr, INVALID_INPUT);
+        return EXIT_FAILURE;
     }
 
 
-    for (int k = 0; k < Vnum; ++k) {
+    for (int l = 0; l <Vnum ; ++l)
+    {
+        printf("vertex %d has %d children\n", l, vertices[l].amountOfChildren);
+        for (int i = 0; i < vertices[l].amountOfChildren; ++i) {
+            printf("%d is the father of %d\n" ,l, vertices[l].children[i]);
+        }
+        if(vertices[l].isLeaf)
+        {
+            printf("%d is also a leaf\n", l);
+        }
+        printf("%d's father is %d\n",l, vertices[l].father);
+    }
+    for (int k = 0; k < Vnum; ++k)
+    {
         free(vertices[k].children);
     }
     return END_OF_PROGRAM;
@@ -140,7 +165,7 @@ int children_parse(const char *ver, struct Vertex *vertices, int index, int Vnum
         fprintf(stderr, "Memory allocation problem");
         return EXIT_FAILURE;
     }
-    if (ver[0]=='-')
+    if (strcmp(ver,IS_LEAF_1)==0 || strcmp(ver,IS_LEAF_2)==0)
     {
         vertices[index].isLeaf = 1;
         vertices[index].children = NULL;
@@ -154,6 +179,7 @@ int children_parse(const char *ver, struct Vertex *vertices, int index, int Vnum
     {
         while(ver[i]!=' ' && ver[i]!=END_OF_LINE)
         {
+            printf("%c", ver[i]);
             if(isdigit(ver[i])==0)
             {
                 return 1;
