@@ -13,6 +13,8 @@
 #define IS_LEAF_1 "-\n"
 #define IS_LEAF_2 "-"
 #define LINE_SIZE 1024
+#define DEFAULT_FATHER -1
+#define IS_ROOT 1
 
 
 struct Vertex
@@ -30,6 +32,8 @@ struct Vertex
 int verticesAmountValidity(const char *ver);
 int children_parse(const char *ver, struct Vertex *vertices, int index, int Vnum);
 //int const *Vnum;  //Number of E = Vnum - 1
+int rootValidity(int Vnum, struct Vertex *vertices);
+
 
 int main(int argc, char* argv[])
 {
@@ -79,6 +83,9 @@ int main(int argc, char* argv[])
     }
     //initiating a vertices array
     struct Vertex vertices[Vnum];
+    for (int l = 0; l < Vnum; ++l) {
+        vertices[l].father = DEFAULT_FATHER;
+    }
     int line =0;
     for (int i = 0; i < Vnum; ++i) {
         line++;
@@ -112,7 +119,14 @@ int main(int argc, char* argv[])
         fprintf(stderr, INVALID_INPUT);
         return EXIT_FAILURE;
     }
-
+    // checks if more than one root or no root at all
+    int isRootCheck = rootValidity(Vnum, vertices);
+    if (isRootCheck)
+    {
+        printf("8\n");
+        fprintf(stderr, INVALID_INPUT);
+        return EXIT_FAILURE;
+    }
 
     for (int l = 0; l <Vnum ; ++l)
     {
@@ -125,7 +139,16 @@ int main(int argc, char* argv[])
             printf("%d is also a leaf\n", l);
         }
         printf("%d's father is %d\n",l, vertices[l].father);
+        if(vertices[l].isRoot)
+        {
+            printf("%d is also the root\n", l);
+        }
     }
+
+
+
+
+
     for (int k = 0; k < Vnum; ++k)
     {
         free(vertices[k].children);
@@ -179,7 +202,6 @@ int children_parse(const char *ver, struct Vertex *vertices, int index, int Vnum
     {
         while(ver[i]!=' ' && ver[i]!=END_OF_LINE)
         {
-            printf("%c", ver[i]);
             if(isdigit(ver[i])==0)
             {
                 return 1;
@@ -193,5 +215,29 @@ int children_parse(const char *ver, struct Vertex *vertices, int index, int Vnum
     vertices[index].isLeaf = 0;
     vertices[index].children = children;
     vertices[index].amountOfChildren = ind;
+    return 0;
+}
+
+/**
+ * iterates over vertices array and checks every node if it has a father, if there is more than 1 vertex w/o a father
+ * or all vertices has a father, returns 1 (invalid tree) else returns 0 and sets the correct vertex to be the root
+ * @param Vnum
+ * @param vertices
+ * @return
+ */
+int rootValidity(int Vnum, struct Vertex *vertices)
+{
+    int count =0;
+    for (int i = 0; i < Vnum; ++i) {
+        if(vertices[i].father == DEFAULT_FATHER)
+        {
+            count++;
+            vertices[i].isRoot = IS_ROOT;
+        }
+    }
+    if(count != 1)
+    {
+        return 1;
+    }
     return 0;
 }
