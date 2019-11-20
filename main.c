@@ -2,6 +2,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include "queue.h"
+
 #define INPUT_LENGTH 4
 #define WRONG_INPUT_LENGTH_MSG "Usage: TreeAnalayzer <Graph File Path> <First Vertex> <Second Vertex>\\n"
 #define EXIT_FAILURE 1
@@ -15,6 +17,10 @@
 #define LINE_SIZE 1024
 #define DEFAULT_FATHER -1
 #define IS_ROOT 1
+#define SIZE 40
+#define NOT_VISITED 1
+#define VISITED 0
+#define NONE 0
 
 
 struct Vertex
@@ -25,6 +31,8 @@ struct Vertex
     int amountOfChildren;
     int key;
     int father;
+    int visited;
+    int distanceFromRoot;
 } Vertex;
 
 
@@ -33,7 +41,10 @@ int children_parse(const char *ver, struct Vertex *vertices, int index, int Vnum
 int rootValidity(int Vnum, struct Vertex *vertices);
 void freeMem(struct Vertex * vertices, int Vnum);
 void setAsLeaf(struct Vertex * v);
-
+void updatePathFromRoot(struct Vertex * vertices, int vertex);
+int rootManipulation(struct Vertex * vertices, int Vnum);
+int findMinPath(struct Vertex * vertices, int Vnum);
+int findMaxPath(struct Vertex * vertices, int Vnum);
 
 
 int main(int argc, char* argv[])
@@ -93,6 +104,8 @@ int main(int argc, char* argv[])
     for (int l = 0; l < Vnum; ++l) {
         vertices[l].father = DEFAULT_FATHER;
         vertices[l].key = l;
+        vertices[l].visited = NOT_VISITED;
+        vertices[l].distanceFromRoot = NONE;
     }
     int line =0;
     for (int i = 0; i < Vnum; ++i) {
@@ -139,37 +152,39 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ TO BE REMOVED
-    for (int k = 0; k < Vnum; ++k)
-    {
-        printf("Vertex %d has %d children\n", k ,vertices[k].amountOfChildren);
-        if(vertices[k].isLeaf)
-        {
-            printf("is a leaf\n");
-        }
-        if(vertices[k].isRoot)
-        {
-            printf("is THE root\n");
-        }
-        if(vertices[k].amountOfChildren)
-        {
-            printf("%d is the father of ", k);
-            for (int i = 0; i < vertices[k].amountOfChildren ; ++i)
-            {
-                printf("%d ", vertices[k].children[i]);
-            }
-            printf("\n");
-        }
-    }
+//    for (int k = 0; k < Vnum; ++k)
+//    {
+//        printf("Vertex %d has %d children\n", k ,vertices[k].amountOfChildren);
+//        if(vertices[k].isLeaf)
+//        {
+//            printf("is a leaf\n");
+//        }
+//        if(vertices[k].isRoot)
+//        {
+//            printf("is THE root\n");
+//        }
+//        if(vertices[k].amountOfChildren)
+//        {
+//            printf("%d is the father of ", k);
+//            for (int i = 0; i < vertices[k].amountOfChildren ; ++i)
+//            {
+//                printf("%d ", vertices[k].children[i]);
+//            }
+//            printf("\n");
+//        }
+//    }
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ TO BE REMOVED
+    int RootIndex=rootManipulation(vertices, Vnum);
+    updatePathFromRoot(vertices, RootIndex);
+    int minPath = findMinPath(vertices, Vnum);
+    int maxPath = findMaxPath(vertices, Vnum);
+
 //    Root Vertex: 7Vertices Count: 8Edges Count: 7Length of Minimal Branch: 2Length of Maximal Branch: 3Diameter Length: 4Shortest Path Between 4 and 3: 4 1 0 3
-    for (int m = 0; m < Vnum; ++m) {
-        if(vertices[m].isRoot)
-        {
-            printf("Root Vertex: %d\n", vertices[m].key);
-        }
-    }
+    printf("Root Vertex: %d\n", RootIndex);
     printf("Vertices Count: %d\n", Vnum);
     printf("Edges Count: %d\n", Vnum-1);
+    printf("Length of Minimal Branch: %d\n", minPath);
+    printf("Length of Maximal Branch: %d\n", maxPath);
 
 
 
@@ -299,3 +314,97 @@ void setAsLeaf(struct Vertex * v)
     v->children = NULL;
     v->amountOfChildren = 0;
 }
+
+
+
+
+int rootManipulation(struct Vertex * vertices, int Vnum)
+{
+    for (int i = 0; i < Vnum; ++i)
+    {
+        if(vertices[i].isRoot)
+        {
+            vertices[i].distanceFromRoot=0;
+            return i;
+        }
+    }
+}
+
+
+
+void updatePathFromRoot(struct Vertex * vertices, int vertex)
+{
+    for (int i = 0; i <vertices[vertex].amountOfChildren ; ++i)
+    {
+        if(vertices[vertices[vertex].children[i]].distanceFromRoot == NONE)
+        {
+            vertices[vertices[vertex].children[i]].distanceFromRoot = vertices[vertex].distanceFromRoot+1;
+        }
+        updatePathFromRoot(vertices, vertices[vertex].children[i]);
+    }
+}
+
+int findMinPath(struct Vertex * vertices, int Vnum)
+{
+    int minPath = Vnum-1;
+    for (int i = 0; i < Vnum; ++i)
+    {
+        if(vertices[i].isLeaf)
+        {
+            if(vertices[i].distanceFromRoot < minPath)
+            {
+                minPath = vertices[i].distanceFromRoot;
+            }
+        }
+    }
+    return minPath;
+}
+
+int findMaxPath(struct Vertex * vertices, int Vnum)
+{
+    int maxPath = 0;
+    for (int i = 0; i < Vnum; ++i)
+    {
+        if(vertices[i].isLeaf)
+        {
+            if(vertices[i].distanceFromRoot > maxPath)
+            {
+                maxPath = vertices[i].distanceFromRoot;
+            }
+        }
+    }
+    return maxPath;
+}
+
+//
+//void bfs(struct Vertex * vertices, int root) {
+//    int i;
+//
+//    //mark first node as visited
+//    vertices[root].visited = VISITED;
+//
+//    //display the vertex
+//    displayVertex(0);
+//
+//    //insert vertex index in queue
+//    insert(0);
+//    int unvisitedVertex;
+//
+//    while(!isQueueEmpty()) {
+//        //get the unvisited vertex of vertex which is at front of the queue
+//        int tempVertex = removeData();
+//
+//        //no adjacent vertex found
+//        while((unvisitedVertex = getAdjUnvisitedVertex(tempVertex)) != -1) {
+//            lstVertices[unvisitedVertex]->visited = true;
+//            displayVertex(unvisitedVertex);
+//            insert(unvisitedVertex);
+//        }
+//
+//    }
+//
+//    //queue is empty, search is complete, reset the visited flag
+//    for(i = 0;i<vertexCount;i++) {
+//        lstVertices[i]->visited = false;
+//    }
+//}

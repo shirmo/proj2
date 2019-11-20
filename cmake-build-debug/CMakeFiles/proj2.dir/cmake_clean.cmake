@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/proj2.dir/main.c.o"
+  "CMakeFiles/proj2.dir/queue.c.o"
   "proj2.pdb"
   "proj2"
 )

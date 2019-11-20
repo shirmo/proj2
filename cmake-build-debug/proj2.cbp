@@ -79,6 +79,12 @@
 		<Unit filename="/cs/usr/shirmo/Documents/C/proj2/main.c">
 			<Option target="proj2"/>
 		</Unit>
+		<Unit filename="/cs/usr/shirmo/Documents/C/proj2/queue.c">
+			<Option target="proj2"/>
+		</Unit>
+		<Unit filename="/cs/usr/shirmo/Documents/C/proj2/queue.h">
+			<Option target="proj2"/>
+		</Unit>
 		<Unit filename="/cs/usr/shirmo/Documents/C/proj2/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
