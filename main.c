@@ -19,7 +19,14 @@
 #define IS_ROOT 1
 #define PREV -1
 #define NONE 0
-
+#define ROOT_PRINT "Root Vertex:"
+#define VERTICES_COUNT "Vertices Count:"
+#define EDGES_COUNT "Edges Count:"
+#define MINIMAL_BRANCH "Length of Minimal Branch:"
+#define MAXIMAL_BRANCH "Length of Maximal Branch:"
+#define DIAMETER "Diameter Length:"
+#define SHORT "Shortest Path Between"
+#define AND "and"
 
 struct Vertex
 {
@@ -37,7 +44,7 @@ struct Vertex
 int verticesAmountValidity(const char *ver);
 int children_parse(const char *ver, struct Vertex *vertices, int index, int Vnum);
 int rootValidity(int Vnum, struct Vertex *vertices);
-void freeMem(struct Vertex * vertices, int Vnum);
+void freeMem(struct Vertex * vertices, int Vnum, FILE * ptr);
 void setAsLeaf(struct Vertex * v);
 void updatePathFromRoot(struct Vertex * vertices, int vertex);
 int rootManipulation(struct Vertex * vertices, int Vnum);
@@ -45,6 +52,7 @@ int findMinPath(struct Vertex * vertices, int Vnum);
 int findMaxPath(struct Vertex * vertices, int Vnum);
 int findMaxNode(struct Vertex * vertices, int Vnum);
 int BFS(struct Vertex *vertices, int s, int Vnum);
+void printResults(int RootIndex, int Vnum, int minPath, int maxPath, int Diameter, int V1, int V2, struct Vertex * vertices);
 
 
 int main(int argc, char* argv[])
@@ -113,7 +121,7 @@ int main(int argc, char* argv[])
         int validation = children_parse(parse, vertices, i, Vnum); //parsing children
         if(validation) // checking if children parse succeeded
         {
-            freeMem(vertices, Vnum);
+            freeMem(vertices, Vnum, ptr);
             printf("5\n");
             fprintf(stderr, INVALID_INPUT);
             return EXIT_FAILURE;
@@ -122,7 +130,7 @@ int main(int argc, char* argv[])
             // checks if children are in Vnum scope + checks if a child equals to it's father
             if(vertices[i].children[j] < 0 || vertices[i].children[j]>=Vnum || vertices[i].children[j] == i)
             {
-                freeMem(vertices, Vnum);
+                freeMem(vertices, Vnum, ptr);
                 printf("6\n");
                 fprintf(stderr, INVALID_INPUT);
                 return EXIT_FAILURE;
@@ -136,7 +144,7 @@ int main(int argc, char* argv[])
     // checks for extra lines
     if (fgets(parse, LINE_SIZE, ptr) !=NULL)
     {
-        freeMem(vertices, Vnum);
+        freeMem(vertices, Vnum, ptr);
         printf("7\n");
         fprintf(stderr, INVALID_INPUT);
         return EXIT_FAILURE;
@@ -145,7 +153,7 @@ int main(int argc, char* argv[])
     int isRootCheck = rootValidity(Vnum, vertices);
     if (isRootCheck)
     {
-        freeMem(vertices, Vnum);
+        freeMem(vertices, Vnum, ptr);
         printf("8\n");
         fprintf(stderr, INVALID_INPUT);
         return EXIT_FAILURE;
@@ -174,30 +182,39 @@ int main(int argc, char* argv[])
         fprintf(stderr, "Problem with BFS algorithm");
     }
 
-
-
-  //  Root Vertex: 7Vertices Count: 8Edges Count: 7Length of Minimal Branch: 2Length of Maximal Branch: 3Diameter Length: 4Shortest Path Between 4 and 3: 4 1 0 3
-//    printf("Root Vertex: %d\n", RootIndex);
-//    printf("Vertices Count: %d\n", Vnum);
-//    printf("Edges Count: %d\n", Vnum-1);
-//    printf("Length of Minimal Branch: %d\n", minPath);
-//    printf("Length of Maximal Branch: %d\n", maxPath);
-//    printf("Diameter Length: %d\n", Diameter);
-//    printf("Shortest Path Between %d and %d: %d ", V1, V2, V1);
-//    int u = V1;
-//    for (int m = 0; m < vertices[V1].bfsDist; ++m) {
-//        printf("%d ",vertices[u].prev);
-//        u = vertices[u].prev;
-//    }
-    freeMem(vertices, Vnum);
-    for (int m = 0; m < Vnum; m++) {
-        if(vertices[m].children==NULL)
-        {printf("%d\n", m);}
-    }
-    // close the file!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//Prints results
+    printResults(RootIndex, Vnum, minPath, maxPath, Diameter, V1, V2, vertices);
+    freeMem(vertices, Vnum, ptr);
     return END_OF_PROGRAM;
 }
 
+/**
+ *
+ * @param RootIndex int representing the root key
+ * @param Vnum amount of vertices in Tree
+ * @param minPath the minimum path from root
+ * @param maxPath the maximum path from root
+ * @param Diameter the Diameter of the Tree
+ * @param V1 First vertex given in the arguments
+ * @param V2 Second vertex given in the arguments
+ * @param vertices array that holds all vertices of the tree
+ */
+void printResults(int RootIndex, int Vnum, int minPath, int maxPath, int Diameter, int V1, int V2, struct Vertex * vertices)
+{
+    printf("%s %d\n",ROOT_PRINT, RootIndex);
+    printf("%s% d\n", VERTICES_COUNT, Vnum);
+    printf("%s %d\n",EDGES_COUNT ,Vnum-1);
+    printf("%s %d\n", MINIMAL_BRANCH, minPath);
+    printf("%s %d\n",MAXIMAL_BRANCH, maxPath);
+    printf("%s %d\n",DIAMETER, Diameter);
+    printf("%s %d %s %d: %d ", SHORT, V1, AND, V2, V1);
+    int u = V1;
+    for (int m = 0; m < vertices[V1].bfsDist; ++m) {
+        printf("%d ",vertices[u].prev);
+        u = vertices[u].prev;
+    }
+    printf("%c",END_OF_LINE);
+}
 
 
 /**
@@ -205,7 +222,7 @@ int main(int argc, char* argv[])
  * @param vertices main array containing vertices that hold another malloc array
  * @param Vnum amount of vertices in the main array
  */
-void freeMem(struct Vertex * vertices, int Vnum)
+void freeMem(struct Vertex * vertices, int Vnum, FILE * ptr)
 {
     for (int i = 0; i < Vnum; i++)
     {
@@ -213,12 +230,13 @@ void freeMem(struct Vertex * vertices, int Vnum)
         vertices[i].children = NULL;
     }
     free(vertices);
+    fclose(ptr);
 }
 
 /**
- *
- * @param ver
- * @return
+ * Parsing the first line of the file
+ * @param ver String
+ * @return 0 if valid 1 if parse is not
  */
 int verticesAmountValidity(const char *ver)
 {
@@ -226,6 +244,7 @@ int verticesAmountValidity(const char *ver)
     {
         if (isdigit(ver[i])==0 && ver[i]!= END_OF_LINE)
         {
+
             return 1;
         }
     }
@@ -249,7 +268,7 @@ int verticesAmountValidity(const char *ver)
 int children_parse(const char *ver, struct Vertex *vertices, int index, int Vnum) //must handle end of line
 {
     int* children = NULL;
-    children = (int*) malloc(Vnum* sizeof(int));
+    children = (int*) malloc(Vnum * sizeof(int));
     if (children ==NULL)
     {
         fprintf(stderr, "Memory allocation problem");
@@ -258,6 +277,7 @@ int children_parse(const char *ver, struct Vertex *vertices, int index, int Vnum
     if (strcmp(ver,IS_LEAF_1)==0 || strcmp(ver,IS_LEAF_2)==0)
     {
         setAsLeaf(&vertices[index]); // set one node to be a leaf
+        free(children);
         return 0;
     }
     char *eptr = ver;
