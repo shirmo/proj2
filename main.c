@@ -17,8 +17,7 @@
 #define LINE_SIZE 1024
 #define DEFAULT_FATHER -1
 #define IS_ROOT 1
-#define NOT_VISITED 1
-#define VISITED 0
+#define PREV -1
 #define NONE 0
 
 
@@ -28,9 +27,9 @@ struct Vertex
     int isRoot;
     int *children;
     int amountOfChildren;
-    int key;
     int father;
-    int visited;
+    unsigned int prev;
+    int bfsDist;
     int distanceFromRoot;
 } Vertex;
 
@@ -44,6 +43,8 @@ void updatePathFromRoot(struct Vertex * vertices, int vertex);
 int rootManipulation(struct Vertex * vertices, int Vnum);
 int findMinPath(struct Vertex * vertices, int Vnum);
 int findMaxPath(struct Vertex * vertices, int Vnum);
+int findMaxNode(struct Vertex * vertices, int Vnum);
+int BFS(struct Vertex *vertices, int s, int Vnum);
 
 
 int main(int argc, char* argv[])
@@ -102,8 +103,7 @@ int main(int argc, char* argv[])
     }
     for (int l = 0; l < Vnum; ++l) {
         vertices[l].father = DEFAULT_FATHER;
-        vertices[l].key = l;
-        vertices[l].visited = NOT_VISITED;
+        vertices[l].prev = PREV;
         vertices[l].distanceFromRoot = NONE;
     }
     int line =0;
@@ -177,6 +177,26 @@ int main(int argc, char* argv[])
     updatePathFromRoot(vertices, RootIndex);
     int minPath = findMinPath(vertices, Vnum);
     int maxPath = findMaxPath(vertices, Vnum);
+    int maxNode = findMaxNode(vertices, Vnum);
+    int diameterTest = BFS(vertices, maxNode, Vnum);
+    if (diameterTest)
+    {
+        fprintf(stderr, "Problem with BFS algorithm");
+    }
+    int Diameter = 0;
+    for (int k = 0; k < Vnum; ++k)
+    {
+        if(Diameter < vertices[k].bfsDist)
+        {
+            Diameter = vertices[k].bfsDist;
+        }
+    }
+    int pathTest = BFS(vertices, maxNode, Vnum);
+    if (pathTest)
+    {
+        fprintf(stderr, "Problem with BFS algorithm");
+    }
+
 
 //    Root Vertex: 7Vertices Count: 8Edges Count: 7Length of Minimal Branch: 2Length of Maximal Branch: 3Diameter Length: 4Shortest Path Between 4 and 3: 4 1 0 3
     printf("Root Vertex: %d\n", RootIndex);
@@ -184,7 +204,7 @@ int main(int argc, char* argv[])
     printf("Edges Count: %d\n", Vnum-1);
     printf("Length of Minimal Branch: %d\n", minPath);
     printf("Length of Maximal Branch: %d\n", maxPath);
-
+    printf("Diameter Length: %d\n", Diameter);
 
 
     freeMem(vertices, Vnum);
@@ -316,7 +336,12 @@ void setAsLeaf(struct Vertex * v)
 
 
 
-
+/**
+ *
+ * @param vertices
+ * @param Vnum
+ * @return
+ */
 int rootManipulation(struct Vertex * vertices, int Vnum)
 {
     for (int i = 0; i < Vnum; ++i)
@@ -330,7 +355,11 @@ int rootManipulation(struct Vertex * vertices, int Vnum)
 }
 
 
-
+/**
+ *
+ * @param vertices
+ * @param vertex
+ */
 void updatePathFromRoot(struct Vertex * vertices, int vertex)
 {
     for (int i = 0; i <vertices[vertex].amountOfChildren ; ++i)
@@ -343,6 +372,12 @@ void updatePathFromRoot(struct Vertex * vertices, int vertex)
     }
 }
 
+/**
+ *
+ * @param vertices
+ * @param Vnum
+ * @return
+ */
 int findMinPath(struct Vertex * vertices, int Vnum)
 {
     int minPath = Vnum-1;
@@ -359,6 +394,12 @@ int findMinPath(struct Vertex * vertices, int Vnum)
     return minPath;
 }
 
+/**
+ *
+ * @param vertices
+ * @param Vnum
+ * @return
+ */
 int findMaxPath(struct Vertex * vertices, int Vnum)
 {
     int maxPath = 0;
@@ -373,6 +414,77 @@ int findMaxPath(struct Vertex * vertices, int Vnum)
         }
     }
     return maxPath;
+}
+
+int findMaxNode(struct Vertex * vertices, int Vnum)
+{
+    int maxPath = 0;
+    int maxNode = 0;
+    for (int i = 0; i < Vnum; ++i)
+    {
+        if(vertices[i].isLeaf)
+        {
+            if(vertices[i].distanceFromRoot > maxPath)
+            {
+                maxPath = vertices[i].distanceFromRoot;
+                maxNode = i;
+            }
+        }
+    }
+    return maxNode;
+}
+
+/**
+ *
+ * @param vertices Data structure that holds all Graph's nodes
+ * @param s Start node
+ * @param Vnum number of vertices in G
+ * @return
+ */
+int BFS(struct Vertex *vertices, int s, int Vnum)
+{
+    for (int i = 0; i < Vnum; ++i)
+    {
+        vertices[i].prev = PREV;
+        vertices[i].bfsDist = -1;
+    }
+    vertices[s].bfsDist = 0;
+    Queue * q = allocQueue();
+    if(q==NULL)
+    {
+        fprintf(stderr, "Memory allocation problem");
+        return EXIT_FAILURE;
+    }
+    enqueue(q, s);
+    while(!queueIsEmpty(q))
+    {
+        unsigned int u = dequeue(q);
+        int HasFather=0;
+        if(vertices[u].father!=DEFAULT_FATHER)
+        {
+            HasFather =1;
+        }
+        for (int i = 0; i < vertices[u].amountOfChildren; ++i) {
+            unsigned int w = vertices[u].children[i];
+            if(vertices[w].bfsDist == -1)
+            {
+                enqueue(q, w);
+                vertices[w].prev = u;
+                vertices[w].bfsDist = vertices[u].bfsDist + 1;
+            }
+        }
+        if(HasFather)
+        {
+            unsigned int f = vertices[u].father;
+            if(vertices[f].bfsDist == -1)
+            {
+                enqueue(q, f);
+                vertices[f].prev = u;
+                vertices[f].bfsDist = vertices[u].bfsDist + 1;
+            }
+        }
+    }
+    return 0;
 }
 
 //
@@ -401,6 +513,8 @@ int findMaxPath(struct Vertex * vertices, int Vnum)
 //
 //    //queue is empty, search is complete, reset the visited flag
 //    for(i = 0;i<vertexCount;i++) {
+//
 //        lstVertices[i]->visited = false;
 //    }
 //}
+
