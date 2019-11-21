@@ -494,35 +494,3 @@ int BFS(struct Vertex *vertices, int s, int Vnum)
     free(q);
     return 0;
 }
-
-//
-//void bfs(struct Vertex * vertices, int node, Queue* q) {
-//
-//    int i;
-//    //mark first node as visited
-//    vertices[node].visited = VISITED;
-//
-//    //insert vertex index in queue
-//    enqueue(q, node);
-//    int unvisitedVertex;
-//
-//    while(!queueIsEmpty(q)) {
-//        //get the unvisited vertex of vertex which is at front of the queue
-//        int tempVertex = removeData();
-//
-//        //no adjacent vertex found
-//        while((unvisitedVertex = getAdjUnvisitedVertex(tempVertex)) != -1) {
-//            lstVertices[unvisitedVertex]->visited = true;
-//            displayVertex(unvisitedVertex);
-//            insert(unvisitedVertex);
-//        }
-//
-//    }
-//
-//    //queue is empty, search is complete, reset the visited flag
-//    for(i = 0;i<vertexCount;i++) {
-//
-//        lstVertices[i]->visited = false;
-//    }
-//}
-
