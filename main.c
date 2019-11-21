@@ -69,7 +69,6 @@ int main(int argc, char* argv[])
     ptr = fopen(argv[1],"r");
     if (ptr == NULL)
     {
-        printf("1\n");
         fprintf(stderr, INVALID_INPUT);
         return EXIT_FAILURE;
     }
@@ -79,7 +78,6 @@ int main(int argc, char* argv[])
     fgets(parse, LINE_SIZE, ptr);
    // Parsing first line;
     if(verticesAmountValidity(parse)) {
-        printf("2\n");
         fprintf(stderr, INVALID_INPUT);
         return EXIT_FAILURE;
     }
@@ -89,7 +87,6 @@ int main(int argc, char* argv[])
     //vertex argument validity check
     if(verticesAmountValidity(argv[VERTEX_1_PLACE]) || verticesAmountValidity(argv[VERTEX_2_PLACE]))
     {
-        printf("3\n");
         fprintf(stderr, INVALID_INPUT);
         return EXIT_FAILURE;
     }
@@ -97,7 +94,6 @@ int main(int argc, char* argv[])
     V2 = (int) strtol(argv[VERTEX_2_PLACE],&eptr, 10);
     if(V1<0 || V1>=Vnum || V2<0 || V2>=Vnum)     // If argument given nodes aren't in Vertices scope, leave program
     {
-        printf("4\n");
         fprintf(stderr, INVALID_INPUT);
         return EXIT_FAILURE;
     }
@@ -122,7 +118,6 @@ int main(int argc, char* argv[])
         if(validation) // checking if children parse succeeded
         {
             freeMem(vertices, Vnum, ptr);
-            printf("5\n");
             fprintf(stderr, INVALID_INPUT);
             return EXIT_FAILURE;
         }
@@ -131,7 +126,6 @@ int main(int argc, char* argv[])
             if(vertices[i].children[j] < 0 || vertices[i].children[j]>=Vnum || vertices[i].children[j] == i)
             {
                 freeMem(vertices, Vnum, ptr);
-                printf("6\n");
                 fprintf(stderr, INVALID_INPUT);
                 return EXIT_FAILURE;
             }
@@ -145,7 +139,6 @@ int main(int argc, char* argv[])
     if (fgets(parse, LINE_SIZE, ptr) !=NULL)
     {
         freeMem(vertices, Vnum, ptr);
-        printf("7\n");
         fprintf(stderr, INVALID_INPUT);
         return EXIT_FAILURE;
     }
@@ -154,7 +147,6 @@ int main(int argc, char* argv[])
     if (isRootCheck)
     {
         freeMem(vertices, Vnum, ptr);
-        printf("8\n");
         fprintf(stderr, INVALID_INPUT);
         return EXIT_FAILURE;
     }
@@ -423,6 +415,12 @@ int findMaxPath(struct Vertex * vertices, int Vnum)
     return maxPath;
 }
 
+/**
+ *
+ * @param vertices
+ * @param Vnum
+ * @return
+ */
 int findMaxNode(struct Vertex * vertices, int Vnum)
 {
     int maxPath = 0;
