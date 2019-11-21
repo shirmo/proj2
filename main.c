@@ -191,11 +191,12 @@ int main(int argc, char* argv[])
             Diameter = vertices[k].bfsDist;
         }
     }
-    int pathTest = BFS(vertices, maxNode, Vnum);
+    int pathTest = BFS(vertices, V2, Vnum);
     if (pathTest)
     {
         fprintf(stderr, "Problem with BFS algorithm");
     }
+
 
 
 //    Root Vertex: 7Vertices Count: 8Edges Count: 7Length of Minimal Branch: 2Length of Maximal Branch: 3Diameter Length: 4Shortest Path Between 4 and 3: 4 1 0 3
@@ -205,8 +206,12 @@ int main(int argc, char* argv[])
     printf("Length of Minimal Branch: %d\n", minPath);
     printf("Length of Maximal Branch: %d\n", maxPath);
     printf("Diameter Length: %d\n", Diameter);
-
-
+    printf("Shortest Path Between %d and %d: %d ", V1, V2, V1);
+    int u = V1;
+    for (int m = 0; m < vertices[V1].bfsDist; ++m) {
+        printf("%d ",vertices[u].prev);
+        u = vertices[u].prev;
+    }
     freeMem(vertices, Vnum);
     // close the file!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     return END_OF_PROGRAM;
