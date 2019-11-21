@@ -150,29 +150,6 @@ int main(int argc, char* argv[])
         fprintf(stderr, INVALID_INPUT);
         return EXIT_FAILURE;
     }
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ TO BE REMOVED
-//    for (int k = 0; k < Vnum; ++k)
-//    {
-//        printf("Vertex %d has %d children\n", k ,vertices[k].amountOfChildren);
-//        if(vertices[k].isLeaf)
-//        {
-//            printf("is a leaf\n");
-//        }
-//        if(vertices[k].isRoot)
-//        {
-//            printf("is THE root\n");
-//        }
-//        if(vertices[k].amountOfChildren)
-//        {
-//            printf("%d is the father of ", k);
-//            for (int i = 0; i < vertices[k].amountOfChildren ; ++i)
-//            {
-//                printf("%d ", vertices[k].children[i]);
-//            }
-//            printf("\n");
-//        }
-//    }
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ TO BE REMOVED
     int RootIndex=rootManipulation(vertices, Vnum);
     updatePathFromRoot(vertices, RootIndex);
     int minPath = findMinPath(vertices, Vnum);
@@ -199,20 +176,24 @@ int main(int argc, char* argv[])
 
 
 
-//    Root Vertex: 7Vertices Count: 8Edges Count: 7Length of Minimal Branch: 2Length of Maximal Branch: 3Diameter Length: 4Shortest Path Between 4 and 3: 4 1 0 3
-    printf("Root Vertex: %d\n", RootIndex);
-    printf("Vertices Count: %d\n", Vnum);
-    printf("Edges Count: %d\n", Vnum-1);
-    printf("Length of Minimal Branch: %d\n", minPath);
-    printf("Length of Maximal Branch: %d\n", maxPath);
-    printf("Diameter Length: %d\n", Diameter);
-    printf("Shortest Path Between %d and %d: %d ", V1, V2, V1);
-    int u = V1;
-    for (int m = 0; m < vertices[V1].bfsDist; ++m) {
-        printf("%d ",vertices[u].prev);
-        u = vertices[u].prev;
-    }
+  //  Root Vertex: 7Vertices Count: 8Edges Count: 7Length of Minimal Branch: 2Length of Maximal Branch: 3Diameter Length: 4Shortest Path Between 4 and 3: 4 1 0 3
+//    printf("Root Vertex: %d\n", RootIndex);
+//    printf("Vertices Count: %d\n", Vnum);
+//    printf("Edges Count: %d\n", Vnum-1);
+//    printf("Length of Minimal Branch: %d\n", minPath);
+//    printf("Length of Maximal Branch: %d\n", maxPath);
+//    printf("Diameter Length: %d\n", Diameter);
+//    printf("Shortest Path Between %d and %d: %d ", V1, V2, V1);
+//    int u = V1;
+//    for (int m = 0; m < vertices[V1].bfsDist; ++m) {
+//        printf("%d ",vertices[u].prev);
+//        u = vertices[u].prev;
+//    }
     freeMem(vertices, Vnum);
+    for (int m = 0; m < Vnum; m++) {
+        if(vertices[m].children==NULL)
+        {printf("%d\n", m);}
+    }
     // close the file!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     return END_OF_PROGRAM;
 }
@@ -226,9 +207,10 @@ int main(int argc, char* argv[])
  */
 void freeMem(struct Vertex * vertices, int Vnum)
 {
-    for (int i = 0; i < Vnum; ++i)
+    for (int i = 0; i < Vnum; i++)
     {
         free(vertices[i].children);
+        vertices[i].children = NULL;
     }
     free(vertices);
 }
@@ -489,6 +471,7 @@ int BFS(struct Vertex *vertices, int s, int Vnum)
             }
         }
     }
+    free(q);
     return 0;
 }
 
