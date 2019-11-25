@@ -1,3 +1,8 @@
+//
+// Created by shirmo on 25/11/19
+// Description: the program parses a text file, decides if it represents a valid tree and outputs the tree's structure
+//
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -20,10 +25,8 @@
 #define SPACE " "
 #define LINE_SIZE 1024
 #define DEFAULT_FATHER -1
-#define IS_ROOT 1
 #define PREV -1
-#define NONE 0
-#define NOT_ROOT 0
+#define ROOT_PROBLEM -1
 #define ROOT_PRINT "Root Vertex:"
 #define VERTICES_COUNT "Vertices Count:"
 #define EDGES_COUNT "Edges Count:"
@@ -39,32 +42,29 @@
 struct Vertex
 {
     int isLeaf;
-    int isRoot;
     int *children;
     int amountOfChildren;
     int father;
     unsigned int prev;
     int bfsDist;
-    int distanceFromRoot;
 } Vertex;
 
 
 void verticesAmountValidity(const char *ver);
-int childrenParse(char *ver, struct Vertex *vertices, int index, int Vnum);
-int rootValidity(int Vnum, struct Vertex *vertices);
-void freeMem(struct Vertex * vertices, int Vnum, FILE * ptr);
+int childrenParse(char *ver, struct Vertex *vertices, int line, int vNum);
+int rootValidity(int vNum, struct Vertex *vertices, FILE * file);
+void freeMem(struct Vertex * vertices, int vNum, FILE * ptr);
 void setAsLeaf(struct Vertex * v);
-void updatePathFromRoot(struct Vertex * vertices, int vertex);
-int rootManipulation(struct Vertex * vertices, int Vnum);
-int findMinPath(struct Vertex * vertices, int Vnum);
-int findMaxPath(struct Vertex * vertices, int Vnum);
-int findMaxNode(struct Vertex * vertices, int Vnum);
-int BFS(struct Vertex *vertices, int s, int Vnum);
-void printResults(int RootIndex, int Vnum, int minPath, int maxPath, int Diameter, int V1, int V2, struct Vertex * vertices);
+int findMinBranch(struct Vertex * vertices, int vNum);
+int findMaxPath(struct Vertex * vertices, int vNum);
+int findMaxNode(struct Vertex * vertices, int vNum);
+void BFS(struct Vertex *vertices, int s, int vNum, FILE * file);
+void printResults(int RootIndex, int vNum, int minPath, int maxPath, int Diameter, int V1, int V2, struct Vertex * vertices);
 int validatedVertex(char * vertex);
 void argumentValidation(int argumentAmount);
-void inScope(int Vnum, int Vertex);
-void initiatingValues(struct Vertex * vertices, int Vnum);
+void inScope(int vNum, int ver);
+void initiatingValues(struct Vertex * vertices, int vNum);
+void treeCreation(int vNum, FILE * file, struct Vertex * vertices);
 
 /**
  * Operating the program
@@ -74,7 +74,7 @@ void initiatingValues(struct Vertex * vertices, int Vnum);
  */
 int main(int argc, char* argv[])
 {
-    int Vnum, V1, V2;
+    int vNum, V1, V2;
     argumentValidation(argc); //argument check
     // OPEN THE FILE AND CHECK IF IT'S NOT EMPTY
     FILE *ptr;
@@ -85,104 +85,45 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
     char parse[LINE_SIZE];
-    //FIRST_LINE - NUM OF VERTEX (check if is digit)
-    fgets(parse, LINE_SIZE, ptr);
-    // Parsing first line;
-    verticesAmountValidity(parse);
+    fgets(parse, LINE_SIZE, ptr); //FIRST_LINE - NUM OF VERTEX (check if is digit)
+    verticesAmountValidity(parse); //Parsing first line;
     char *eptr;
-    Vnum = (int) strtol(parse, &eptr, 10);
-
+    vNum = (int) strtol(parse, &eptr, 10);
     //vertex argument validity check
     verticesAmountValidity(argv[VERTEX_1_PLACE]);
     verticesAmountValidity(argv[VERTEX_2_PLACE]);
-
     V1 = (int) strtol(argv[VERTEX_1_PLACE], &eptr, 10);
     V2 = (int) strtol(argv[VERTEX_2_PLACE], &eptr, 10);
     // If argument given nodes aren't in Vertices scope, leave program
-    inScope(Vnum, V1);
-    inScope(Vnum, V2);
-
-    //initiating a vertices array
-    struct Vertex * vertices = NULL;
-    vertices = (struct Vertex *) malloc(Vnum*sizeof(struct Vertex));
-    initiatingValues(vertices, Vnum);
+    inScope(vNum, V1);
+    inScope(vNum, V2);
+    struct Vertex * vertices = NULL;     //initiating a vertices array
+    vertices = (struct Vertex *) malloc(vNum * sizeof(struct Vertex));
     if(vertices == NULL)
     {
         fprintf(stderr, "Memory allocation problem");
         return EXIT_FAILURE;
     }
-    for (int i = 0; i < Vnum; ++i)
+    initiatingValues(vertices, vNum);
+    treeCreation(vNum, ptr, vertices);
+    if (fgets(parse, LINE_SIZE, ptr) !=NULL) // checks for extra lines
     {
-        fgets(parse, LINE_SIZE, ptr);
-        int validation = childrenParse(parse, vertices, i, Vnum); //parsing children
-        if(validation) // checking if children parse succeeded
-        {
-            freeMem(vertices, Vnum, ptr);
-            fprintf(stderr, INVALID_INPUT);
-            return EXIT_FAILURE;
-        }
-        for (int j = 0; j < vertices[i].amountOfChildren; ++j)
-        {
-            // checks if children are in Vnum scope + checks if a child equals to it's father
-            if(vertices[i].children[j] < 0 || vertices[i].children[j] >= Vnum || vertices[i].children[j] == i)
-            {
-                freeMem(vertices, Vnum, ptr);
-                fprintf(stderr, INVALID_INPUT);
-                return EXIT_FAILURE;
-            }
-        }
-    }
-    // checks for extra lines
-    if (fgets(parse, LINE_SIZE, ptr) !=NULL)
-    {
-        freeMem(vertices, Vnum, ptr);
+        freeMem(vertices, vNum, ptr);
         fprintf(stderr, INVALID_INPUT);
         return EXIT_FAILURE;
     }
-    // checks if more than one root or no root at all
-    int isRootCheck = rootValidity(Vnum, vertices);
-    if (isRootCheck)
-    {
-        freeMem(vertices, Vnum, ptr);
-        fprintf(stderr, INVALID_INPUT);
-        return EXIT_FAILURE;
-    }
-    int RootIndex = rootManipulation(vertices, Vnum);
-    if(RootIndex == -1)
-    {
-//TO BE CHANGED TO BFS
-        fprintf(stderr, INVALID_INPUT);
-        return EXIT_FAILURE;
-    }
-    updatePathFromRoot(vertices, RootIndex);
-    int minPath = findMinPath(vertices, Vnum);
-    int maxPath = findMaxPath(vertices, Vnum);
-    int maxNode = findMaxNode(vertices, Vnum);
-    int diameterTest = BFS(vertices, maxNode, Vnum);
-    if (diameterTest)
-    {
-        fprintf(stderr, "Problem with BFS algorithm");
-    }
-    int Diameter = 0;
-    for (int k = 0; k < Vnum; ++k)
-    {
-        if(Diameter < vertices[k].bfsDist)
-        {
-            Diameter = vertices[k].bfsDist;
-        }
-    }
-    int pathTest = BFS(vertices, V2, Vnum);
-    if (pathTest)
-    {
-        fprintf(stderr, "Problem with BFS algorithm");
-    }
-
-//Prints results
-    printResults(RootIndex, Vnum, minPath, maxPath, Diameter, V1, V2, vertices);
-    freeMem(vertices, Vnum, ptr);
+    int RootIndex = rootValidity(vNum, vertices, ptr); // checks if more than one root or no root at all
+    BFS(vertices, RootIndex, vNum, ptr);
+    int minPath = findMinBranch(vertices, vNum);
+    int maxPath = findMaxPath(vertices, vNum);
+    int maxNode = findMaxNode(vertices, vNum);
+    BFS(vertices, maxNode, vNum, ptr);
+    int Diameter = findMaxPath(vertices, vNum);
+    BFS(vertices, V2, vNum, ptr);
+    printResults(RootIndex, vNum, minPath, maxPath, Diameter, V1, V2, vertices); //Prints results
+    freeMem(vertices, vNum, ptr);
     return END_OF_PROGRAM;
 }
-
 
 
 /**
@@ -200,9 +141,9 @@ void argumentValidation(int argumentAmount)
 
 
 /**
- *
+ * Prints all required outputs
  * @param RootIndex int representing the root key
- * @param Vnum amount of vertices in Tree
+ * @param vNum amount of vertices in Tree
  * @param minPath the minimum path from root
  * @param maxPath the maximum path from root
  * @param Diameter the Diameter of the Tree
@@ -210,11 +151,11 @@ void argumentValidation(int argumentAmount)
  * @param V2 Second vertex given in the arguments
  * @param vertices array that holds all vertices of the tree
  */
-void printResults(int RootIndex, int Vnum, int minPath, int maxPath, int Diameter, int V1, int V2, struct Vertex * vertices)
+void printResults(int RootIndex, int vNum, int minPath, int maxPath, int Diameter, int V1, int V2, struct Vertex * vertices)
 {
     printf("%s %d\n", ROOT_PRINT, RootIndex);
-    printf("%s% d\n", VERTICES_COUNT, Vnum);
-    printf("%s %d\n", EDGES_COUNT , Vnum-1);
+    printf("%s% d\n", VERTICES_COUNT, vNum);
+    printf("%s %d\n", EDGES_COUNT , vNum-1);
     printf("%s %d\n", MINIMAL_BRANCH, minPath);
     printf("%s %d\n", MAXIMAL_BRANCH, maxPath);
     printf("%s %d\n", DIAMETER, Diameter);
@@ -223,7 +164,7 @@ void printResults(int RootIndex, int Vnum, int minPath, int maxPath, int Diamete
     for (int m = 0; m < vertices[V1].bfsDist; ++m)
     {
         printf(" %d", vertices[u].prev);
-        u = vertices[u].prev;
+        u = (int) vertices[u].prev;
     }
     printf("%c", END_OF_LINE);
 }
@@ -232,11 +173,11 @@ void printResults(int RootIndex, int Vnum, int minPath, int maxPath, int Diamete
 /**
  * Freeing all malloc arrays
  * @param vertices main array containing vertices that hold another malloc array
- * @param Vnum amount of vertices in the main array
+ * @param vNum amount of vertices in the main array
  */
-void freeMem(struct Vertex * vertices, int Vnum, FILE * ptr)
+void freeMem(struct Vertex * vertices, int vNum, FILE * ptr)
 {
-    for (int i = 0; i < Vnum; i++)
+    for (int i = 0; i < vNum; i++)
     {
         if (vertices[i].children != NULL)
         {
@@ -275,32 +216,35 @@ void verticesAmountValidity(const char *ver)
 
 /**
  *
- * @param ver
- * @param vertices
- * @param index
- * @param Vnum
- * @return
+ * @param ver full line from text file
+ * @param vertices array of nodes
+ * @param line the index of the father node
+ * @param vNum mount of nodes in graph
+ * @return 0 if parse succeeded, else 1
  */
-int childrenParse(char *ver, struct Vertex *vertices, int index, int Vnum) //must handle end of line
+int childrenParse(char *ver, struct Vertex *vertices, int line, int vNum)
 {
     int *children = NULL;
-    children = (int *) malloc(Vnum * sizeof(int));
-    if (children == NULL) {
+    children = (int *) malloc(vNum * sizeof(int));
+    if (children == NULL)
+    {
         fprintf(stderr, "Memory allocation problem");
         return EXIT_FAILURE;
     }
-    if (strcmp(ver, EMPTY_LINE) == 0) {
+    if (strcmp(ver, EMPTY_LINE) == 0)
+    {
         free(children);
         return 1;
     }
-    ver[strcspn(ver, END_OF_LINE_2)] = 0; // remove end of line
-    if (strcmp(ver, IS_LEAF_1) == 0 || strcmp(ver, IS_LEAF_2) == 0) {
-        setAsLeaf(&vertices[index]); // set one node to be a leaf
-        free(children);
-        return 0;
-    }
+    ver[strcspn(ver, END_OF_LINE_2)] = 0; // removes end of line
     char *crop;
     crop = strtok(ver, SPACE);
+    if (strcmp(crop, IS_LEAF_1) == 0 || strcmp(crop, IS_LEAF_2) == 0)
+    {
+        setAsLeaf(&vertices[line]); // set one node to be a leaf
+        free(children);
+        return EXIT_SUCCESS;
+    }
     int child;
     int ind = 0;
     while (crop != NULL)
@@ -308,53 +252,56 @@ int childrenParse(char *ver, struct Vertex *vertices, int index, int Vnum) //mus
         if (validatedVertex(crop))
         {
             free(children);
-            return 1;
+            return EXIT_FAILURE;
         }
-        child = strtol(crop, NULL, 10);
+        child = (int) strtol(crop, NULL, 10);
         if (child == 0 && *crop != 48)
         {
             free(children);
-            return 1;
+            return EXIT_FAILURE;
         }
-        if (child >= Vnum || child < 0 || vertices[child].father != DEFAULT_FATHER) // checks if vertex in scope + if it doesn't have a father
+        if (child >= vNum || child < 0 || vertices[child].father != DEFAULT_FATHER) // checks if vertex in scope + if it doesn't have a father
         {
             free(children);
-            return 1;
+            return EXIT_FAILURE;
         }
-        vertices[child].father = index;
+        vertices[child].father = line;
         children[ind] = child;
         ind++;
         crop = strtok(NULL, SPACE);
     }
-    vertices[index].isLeaf = 0;
-    vertices[index].children = children;
-    vertices[index].amountOfChildren = ind;
-    return 0;
+    vertices[line].isLeaf = 0;
+    vertices[line].children = children;
+    vertices[line].amountOfChildren = ind;
+    return EXIT_SUCCESS;
 }
 
 /**
  * iterates over vertices array and checks every node if it has a father, if there is more than 1 vertex w/o a father
  * or all vertices has a father, returns 1 (invalid tree) else returns 0 and sets the correct vertex to be the root
- * @param Vnum
- * @param vertices
+ * @param vNum mount of nodes in graph
+ * @param vertices array of nodes
  * @return
  */
-int rootValidity(int Vnum, struct Vertex *vertices)
+int rootValidity(int vNum, struct Vertex *vertices, FILE * file)
 {
     int count = 0;
-    for (int i = 0; i < Vnum; ++i)
+    int isRoot = ROOT_PROBLEM;
+    for (int i = 0; i < vNum; ++i)
     {
         if(vertices[i].father == DEFAULT_FATHER)
         {
             count++;
-            vertices[i].isRoot = IS_ROOT;
+            isRoot = i;
         }
     }
     if(count != 1)
     {
-        return 1;
+        freeMem(vertices, vNum, file);
+        fprintf(stderr, INVALID_INPUT);
+        exit(EXIT_FAILURE);
     }
-    return 0;
+    return isRoot;
 }
 
 /**
@@ -368,61 +315,22 @@ void setAsLeaf(struct Vertex * v)
     v->amountOfChildren = 0;
 }
 
-
-
 /**
- *
- * @param vertices
- * @param Vnum
- * @return
+ *  looks for the leaf with the shortest distance from root
+ * @param vertices array of nodes
+ * @param vNum amount of nodes in graph
+ * @return the shortest path from root to leaf
  */
-int rootManipulation(struct Vertex * vertices, int Vnum)
+int findMinBranch(struct Vertex * vertices, int vNum)
 {
-    for (int i = 0; i < Vnum; ++i)
-    {
-        if(vertices[i].isRoot)
-        {
-            vertices[i].distanceFromRoot = 0;
-            return i;
-        }
-    }
-    return -1;
-}
-
-
-/**
- *
- * @param vertices
- * @param vertex
- */
-void updatePathFromRoot(struct Vertex * vertices, int vertex)
-{
-    for (int i = 0; i <vertices[vertex].amountOfChildren ; ++i)
-    {
-        if(vertices[vertices[vertex].children[i]].distanceFromRoot == NONE)
-        {
-            vertices[vertices[vertex].children[i]].distanceFromRoot = vertices[vertex].distanceFromRoot + 1;
-        }
-        updatePathFromRoot(vertices, vertices[vertex].children[i]);
-    }
-}
-
-/**
- *
- * @param vertices
- * @param Vnum
- * @return
- */
-int findMinPath(struct Vertex * vertices, int Vnum)
-{
-    int minPath = Vnum-1;
-    for (int i = 0; i < Vnum; ++i)
+    int minPath = vNum-1;
+    for (int i = 0; i < vNum; ++i)
     {
         if(vertices[i].isLeaf)
         {
-            if(vertices[i].distanceFromRoot < minPath)
+            if(vertices[i].bfsDist < minPath)
             {
-                minPath = vertices[i].distanceFromRoot;
+                minPath = vertices[i].bfsDist;
             }
         }
     }
@@ -430,44 +338,41 @@ int findMinPath(struct Vertex * vertices, int Vnum)
 }
 
 /**
- *
- * @param vertices
- * @param Vnum
- * @return
+ * looks for the leaf with the longest distance from root
+ * @param vertices array of nodes
+ * @param vNum amount of nodes in graph
+ * @return the longest path from root to leaf
  */
-int findMaxPath(struct Vertex * vertices, int Vnum)
+int findMaxPath(struct Vertex * vertices, int vNum)
 {
     int maxPath = 0;
-    for (int i = 0; i < Vnum; ++i)
+    for (int i = 0; i < vNum; ++i)
     {
-        if(vertices[i].isLeaf)
+        if(vertices[i].bfsDist > maxPath)
         {
-            if(vertices[i].distanceFromRoot > maxPath)
-            {
-                maxPath = vertices[i].distanceFromRoot;
-            }
+            maxPath = vertices[i].bfsDist;
         }
     }
     return maxPath;
 }
 
 /**
- *
+ * Finds the deepest leaf in the tree
  * @param vertices
- * @param Vnum
- * @return
+ * @param vNum number of vertices
+ * @return the index of the deepest node
  */
-int findMaxNode(struct Vertex * vertices, int Vnum)
+int findMaxNode(struct Vertex * vertices, int vNum)
 {
     int maxPath = 0;
     int maxNode = 0;
-    for (int i = 0; i < Vnum; ++i)
+    for (int i = 0; i < vNum; ++i)
     {
         if(vertices[i].isLeaf)
         {
-            if(vertices[i].distanceFromRoot > maxPath)
+            if(vertices[i].bfsDist > maxPath)
             {
-                maxPath = vertices[i].distanceFromRoot;
+                maxPath = vertices[i].bfsDist;
                 maxNode = i;
             }
         }
@@ -479,12 +384,12 @@ int findMaxNode(struct Vertex * vertices, int Vnum)
  *
  * @param vertices Data structure that holds all Graph's nodes
  * @param s Start node
- * @param Vnum number of vertices in G
- * @return
+ * @param vNum number of vertices in G
+ * @return 0 if succeeded else 1
  */
-int BFS(struct Vertex *vertices, int s, int Vnum)
+void BFS(struct Vertex *vertices, int s, int vNum, FILE * file)
 {
-    for (int i = 0; i < Vnum; ++i)
+    for (int i = 0; i < vNum; ++i)
     {
         vertices[i].prev = PREV;
         vertices[i].bfsDist = -1;
@@ -493,8 +398,10 @@ int BFS(struct Vertex *vertices, int s, int Vnum)
     Queue * q = allocQueue();
     if(q == NULL)
     {
+        freeMem(vertices, vNum, file);
+        free(q);
         fprintf(stderr, "Memory allocation problem");
-        return EXIT_FAILURE;
+        exit(EXIT_FAILURE);
     }
     enqueue(q, s);
     while(!queueIsEmpty(q))
@@ -526,13 +433,12 @@ int BFS(struct Vertex *vertices, int s, int Vnum)
         }
     }
     free(q);
-    return 0;
 }
 
 /**
  * Helps parser with non digit char
  * @param vertex
- * @return
+ * @return 0 if succeeded else 1
  */
 int validatedVertex(char * vertex)
 {
@@ -540,20 +446,20 @@ int validatedVertex(char * vertex)
     {
         if(!isdigit(vertex[i]))
         {
-            return 1;
+            return EXIT_FAILURE;
         }
     }
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 /**
  * checks if a given vertex in scope or not
- * @param Vnum amount of nodes in Graph
- * @param Vertex the given parsed vertex
+ * @param vNum amount of nodes in Graph
+ * @param ver the given parsed vertex
  */
-void inScope(int Vnum, int Vertex)
+void inScope(int vNum, int ver)
 {
-    if(Vertex < 0 || Vertex >= Vnum)
+    if(ver < 0 || ver >= vNum)
     {
         fprintf(stderr, INVALID_INPUT);
         exit(EXIT_FAILURE);
@@ -563,15 +469,46 @@ void inScope(int Vnum, int Vertex)
 /**
  * Initiating values into all vertices
  * @param vertices array of nodes
- * @param Vnum number of nodes in Graph
+ * @param vNum number of nodes in Graph
  */
-void initiatingValues(struct Vertex * vertices, int Vnum)
+void initiatingValues(struct Vertex * vertices, int vNum)
 {
-    for (int m = 0; m < Vnum; ++m) {
+    for (int m = 0; m < vNum; ++m)
+    {
         vertices[m].children = NULL;
         vertices[m].father = DEFAULT_FATHER;
         vertices[m].prev = PREV;
-        vertices[m].distanceFromRoot = NONE;
-        vertices[m].isRoot = NOT_ROOT;
+    }
+}
+
+/**
+ * Parses line by line and builds the tree. exits in cases of invalid input
+ * @param vNum number of vertices in graph
+ * @param file pointer to the file to parse
+ * @param vertices an array of nodes
+ */
+void treeCreation(int vNum, FILE * file, struct Vertex * vertices)
+{
+    char parse[LINE_SIZE];
+    for (int i = 0; i < vNum; ++i)
+    {
+        fgets(parse, LINE_SIZE, file);
+        int validation = childrenParse(parse, vertices, i, vNum); //parsing children
+        if(validation) // checking if children parse succeeded
+        {
+            freeMem(vertices, vNum, file);
+            fprintf(stderr, INVALID_INPUT);
+            exit(EXIT_FAILURE);
+        }
+        for (int j = 0; j < vertices[i].amountOfChildren; ++j)
+        {
+            // checks if children are in vNum scope + checks if a child equals to it's father
+            if(vertices[i].children[j] < 0 || vertices[i].children[j] >= vNum || vertices[i].children[j] == i)
+            {
+                freeMem(vertices, vNum, file);
+                fprintf(stderr, INVALID_INPUT);
+                exit(EXIT_FAILURE);
+            }
+        }
     }
 }
