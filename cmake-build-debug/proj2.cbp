@@ -76,7 +76,7 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/cs/usr/shirmo/Documents/C/proj2/main.c">
+		<Unit filename="/cs/usr/shirmo/Documents/C/proj2/TreeAnalyzer.c">
 			<Option target="proj2"/>
 		</Unit>
 		<Unit filename="/cs/usr/shirmo/Documents/C/proj2/queue.c">

@@ -57,18 +57,18 @@ include CMakeFiles/proj2.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/proj2.dir/flags.make
 
-CMakeFiles/proj2.dir/main.c.o: CMakeFiles/proj2.dir/flags.make
-CMakeFiles/proj2.dir/main.c.o: ../main.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/proj2.dir/main.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/proj2.dir/main.c.o   -c /cs/usr/shirmo/Documents/C/proj2/main.c
+CMakeFiles/proj2.dir/TreeAnalyzer.c.o: CMakeFiles/proj2.dir/flags.make
+CMakeFiles/proj2.dir/TreeAnalyzer.c.o: ../TreeAnalyzer.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/proj2.dir/TreeAnalyzer.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/proj2.dir/TreeAnalyzer.c.o   -c /cs/usr/shirmo/Documents/C/proj2/TreeAnalyzer.c
 
-CMakeFiles/proj2.dir/main.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/proj2.dir/main.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /cs/usr/shirmo/Documents/C/proj2/main.c > CMakeFiles/proj2.dir/main.c.i
+CMakeFiles/proj2.dir/TreeAnalyzer.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/proj2.dir/TreeAnalyzer.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /cs/usr/shirmo/Documents/C/proj2/TreeAnalyzer.c > CMakeFiles/proj2.dir/TreeAnalyzer.c.i
 
-CMakeFiles/proj2.dir/main.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/proj2.dir/main.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /cs/usr/shirmo/Documents/C/proj2/main.c -o CMakeFiles/proj2.dir/main.c.s
+CMakeFiles/proj2.dir/TreeAnalyzer.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/proj2.dir/TreeAnalyzer.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /cs/usr/shirmo/Documents/C/proj2/TreeAnalyzer.c -o CMakeFiles/proj2.dir/TreeAnalyzer.c.s
 
 CMakeFiles/proj2.dir/queue.c.o: CMakeFiles/proj2.dir/flags.make
 CMakeFiles/proj2.dir/queue.c.o: ../queue.c
@@ -85,13 +85,13 @@ CMakeFiles/proj2.dir/queue.c.s: cmake_force
 
 # Object files for target proj2
 proj2_OBJECTS = \
-"CMakeFiles/proj2.dir/main.c.o" \
+"CMakeFiles/proj2.dir/TreeAnalyzer.c.o" \
 "CMakeFiles/proj2.dir/queue.c.o"
 
 # External object files for target proj2
 proj2_EXTERNAL_OBJECTS =
 
-proj2: CMakeFiles/proj2.dir/main.c.o
+proj2: CMakeFiles/proj2.dir/TreeAnalyzer.c.o
 proj2: CMakeFiles/proj2.dir/queue.c.o
 proj2: CMakeFiles/proj2.dir/build.make
 proj2: CMakeFiles/proj2.dir/link.txt

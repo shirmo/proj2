@@ -123,32 +123,32 @@ proj2/fast:
 	$(MAKE) -f CMakeFiles/proj2.dir/build.make CMakeFiles/proj2.dir/build
 .PHONY : proj2/fast
 
-main.o: main.c.o
+TreeAnalyzer.o: TreeAnalyzer.c.o
 
-.PHONY : main.o
+.PHONY : TreeAnalyzer.o
 
 # target to build an object file
-main.c.o:
-	$(MAKE) -f CMakeFiles/proj2.dir/build.make CMakeFiles/proj2.dir/main.c.o
-.PHONY : main.c.o
+TreeAnalyzer.c.o:
+	$(MAKE) -f CMakeFiles/proj2.dir/build.make CMakeFiles/proj2.dir/TreeAnalyzer.c.o
+.PHONY : TreeAnalyzer.c.o
 
-main.i: main.c.i
+TreeAnalyzer.i: TreeAnalyzer.c.i
 
-.PHONY : main.i
+.PHONY : TreeAnalyzer.i
 
 # target to preprocess a source file
-main.c.i:
-	$(MAKE) -f CMakeFiles/proj2.dir/build.make CMakeFiles/proj2.dir/main.c.i
-.PHONY : main.c.i
+TreeAnalyzer.c.i:
+	$(MAKE) -f CMakeFiles/proj2.dir/build.make CMakeFiles/proj2.dir/TreeAnalyzer.c.i
+.PHONY : TreeAnalyzer.c.i
 
-main.s: main.c.s
+TreeAnalyzer.s: TreeAnalyzer.c.s
 
-.PHONY : main.s
+.PHONY : TreeAnalyzer.s
 
 # target to generate assembly for a file
-main.c.s:
-	$(MAKE) -f CMakeFiles/proj2.dir/build.make CMakeFiles/proj2.dir/main.c.s
-.PHONY : main.c.s
+TreeAnalyzer.c.s:
+	$(MAKE) -f CMakeFiles/proj2.dir/build.make CMakeFiles/proj2.dir/TreeAnalyzer.c.s
+.PHONY : TreeAnalyzer.c.s
 
 queue.o: queue.c.o
 
@@ -186,9 +186,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... proj2"
 	@echo "... edit_cache"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... TreeAnalyzer.o"
+	@echo "... TreeAnalyzer.i"
+	@echo "... TreeAnalyzer.s"
 	@echo "... queue.o"
 	@echo "... queue.i"
 	@echo "... queue.s"
