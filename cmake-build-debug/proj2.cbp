@@ -8,28 +8,28 @@
 		<Option virtualFolders="CMake Files\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug"/>
+				<Option working_dir="/cs/usr/shirmo/Documents/proj2/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug"/>
+				<Option working_dir="/cs/usr/shirmo/Documents/proj2/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="proj2">
-				<Option output="/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/proj2" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug"/>
+				<Option output="/cs/usr/shirmo/Documents/proj2/cmake-build-debug/proj2" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/cs/usr/shirmo/Documents/proj2/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
@@ -40,15 +40,15 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 proj2"/>
-					<CompileFile command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 proj2"/>
+					<CompileFile command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="proj2/fast">
-				<Option output="/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/proj2" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug"/>
+				<Option output="/cs/usr/shirmo/Documents/proj2/cmake-build-debug/proj2" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/cs/usr/shirmo/Documents/proj2/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
@@ -59,33 +59,33 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 proj2/fast"/>
-					<CompileFile command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 proj2/fast"/>
+					<CompileFile command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug"/>
+				<Option working_dir="/cs/usr/shirmo/Documents/proj2/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j6 -f &quot;/cs/usr/shirmo/Documents/proj2/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/cs/usr/shirmo/Documents/C/proj2/TreeAnalyzer.c">
+		<Unit filename="/cs/usr/shirmo/Documents/proj2/TreeAnalyzer.c">
 			<Option target="proj2"/>
 		</Unit>
-		<Unit filename="/cs/usr/shirmo/Documents/C/proj2/queue.c">
+		<Unit filename="/cs/usr/shirmo/Documents/proj2/queue.c">
 			<Option target="proj2"/>
 		</Unit>
-		<Unit filename="/cs/usr/shirmo/Documents/C/proj2/queue.h">
+		<Unit filename="/cs/usr/shirmo/Documents/proj2/queue.h">
 			<Option target="proj2"/>
 		</Unit>
-		<Unit filename="/cs/usr/shirmo/Documents/C/proj2/CMakeLists.txt">
+		<Unit filename="/cs/usr/shirmo/Documents/proj2/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 	</Project>

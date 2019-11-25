@@ -1,4 +1,4 @@
-# Install script for directory: /cs/usr/shirmo/Documents/C/proj2
+# Install script for directory: /cs/usr/shirmo/Documents/proj2
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/cs/usr/shirmo/Documents/C/proj2/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/cs/usr/shirmo/Documents/proj2/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

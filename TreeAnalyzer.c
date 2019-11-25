@@ -5,20 +5,25 @@
 #include "queue.h"
 
 #define INPUT_LENGTH 4
-#define WRONG_INPUT_LENGTH_MSG "Usage: TreeAnalayzer <Graph File Path> <First Vertex> <Second Vertex>\\n"
+#define WRONG_INPUT_LENGTH_MSG "Usage: TreeAnalyzer <Graph File Path> <First Vertex> <Second Vertex>\n"
 #define EXIT_FAILURE 1
+#define	EXIT_SUCCESS	0
 #define END_OF_PROGRAM 0
 #define INVALID_INPUT "Invalid input\n"
 #define VERTEX_1_PLACE 2
 #define VERTEX_2_PLACE 3
 #define END_OF_LINE '\n'
+#define END_OF_LINE_2 "\r\n"
+#define EMPTY_LINE "\n"
 #define IS_LEAF_1 "-\n"
 #define IS_LEAF_2 "-"
+#define SPACE " "
 #define LINE_SIZE 1024
 #define DEFAULT_FATHER -1
 #define IS_ROOT 1
 #define PREV -1
 #define NONE 0
+#define NOT_ROOT 0
 #define ROOT_PRINT "Root Vertex:"
 #define VERTICES_COUNT "Vertices Count:"
 #define EDGES_COUNT "Edges Count:"
@@ -44,7 +49,7 @@ struct Vertex
 } Vertex;
 
 
-int verticesAmountValidity(const char *ver);
+void verticesAmountValidity(const char *ver);
 int childrenParse(char *ver, struct Vertex *vertices, int index, int Vnum);
 int rootValidity(int Vnum, struct Vertex *vertices);
 void freeMem(struct Vertex * vertices, int Vnum, FILE * ptr);
@@ -56,7 +61,10 @@ int findMaxPath(struct Vertex * vertices, int Vnum);
 int findMaxNode(struct Vertex * vertices, int Vnum);
 int BFS(struct Vertex *vertices, int s, int Vnum);
 void printResults(int RootIndex, int Vnum, int minPath, int maxPath, int Diameter, int V1, int V2, struct Vertex * vertices);
-
+int validatedVertex(char * vertex);
+void argumentValidation(int argumentAmount);
+void inScope(int Vnum, int Vertex);
+void initiatingValues(struct Vertex * vertices, int Vnum);
 
 /**
  * Operating the program
@@ -67,12 +75,7 @@ void printResults(int RootIndex, int Vnum, int minPath, int maxPath, int Diamete
 int main(int argc, char* argv[])
 {
     int Vnum, V1, V2;
-    if(argc != INPUT_LENGTH)
-    {
-        fprintf(stderr, WRONG_INPUT_LENGTH_MSG);
-        return EXIT_FAILURE;
-    }
-
+    argumentValidation(argc); //argument check
     // OPEN THE FILE AND CHECK IF IT'S NOT EMPTY
     FILE *ptr;
     ptr = fopen(argv[1], "r");
@@ -81,50 +84,35 @@ int main(int argc, char* argv[])
         fprintf(stderr, INVALID_INPUT);
         return EXIT_FAILURE;
     }
-
     char parse[LINE_SIZE];
     //FIRST_LINE - NUM OF VERTEX (check if is digit)
     fgets(parse, LINE_SIZE, ptr);
-   // Parsing first line;
-    if(verticesAmountValidity(parse))
-    {
-        fprintf(stderr, INVALID_INPUT);
-        return EXIT_FAILURE;
-    }
+    // Parsing first line;
+    verticesAmountValidity(parse);
     char *eptr;
     Vnum = (int) strtol(parse, &eptr, 10);
 
     //vertex argument validity check
-    if(verticesAmountValidity(argv[VERTEX_1_PLACE]) || verticesAmountValidity(argv[VERTEX_2_PLACE]))
-    {
-        fprintf(stderr, INVALID_INPUT);
-        return EXIT_FAILURE;
-    }
+    verticesAmountValidity(argv[VERTEX_1_PLACE]);
+    verticesAmountValidity(argv[VERTEX_2_PLACE]);
+
     V1 = (int) strtol(argv[VERTEX_1_PLACE], &eptr, 10);
     V2 = (int) strtol(argv[VERTEX_2_PLACE], &eptr, 10);
-    if(V1 < 0 || V1 >= Vnum || V2 < 0 || V2 >= Vnum)     // If argument given nodes aren't in Vertices scope, leave program
-    {
-        fprintf(stderr, INVALID_INPUT);
-        return EXIT_FAILURE;
-    }
+    // If argument given nodes aren't in Vertices scope, leave program
+    inScope(Vnum, V1);
+    inScope(Vnum, V2);
+
     //initiating a vertices array
     struct Vertex * vertices = NULL;
     vertices = (struct Vertex *) malloc(Vnum*sizeof(struct Vertex));
+    initiatingValues(vertices, Vnum);
     if(vertices == NULL)
     {
         fprintf(stderr, "Memory allocation problem");
         return EXIT_FAILURE;
     }
-    for (int l = 0; l < Vnum; ++l)
-    {
-        vertices[l].father = DEFAULT_FATHER;
-        vertices[l].prev = PREV;
-        vertices[l].distanceFromRoot = NONE;
-    }
-    int line = 0;
     for (int i = 0; i < Vnum; ++i)
     {
-        line++;
         fgets(parse, LINE_SIZE, ptr);
         int validation = childrenParse(parse, vertices, i, Vnum); //parsing children
         if(validation) // checking if children parse succeeded
@@ -141,10 +129,6 @@ int main(int argc, char* argv[])
                 freeMem(vertices, Vnum, ptr);
                 fprintf(stderr, INVALID_INPUT);
                 return EXIT_FAILURE;
-            }
-            else
-            {
-                vertices[vertices[i].children[j]].father = i;
             }
         }
     }
@@ -199,6 +183,22 @@ int main(int argc, char* argv[])
     return END_OF_PROGRAM;
 }
 
+
+
+/**
+ * validate arguments amount
+ * @param argumentAmount argc from the command line
+ */
+void argumentValidation(int argumentAmount)
+{
+    if(argumentAmount != INPUT_LENGTH)
+    {
+        fprintf(stderr, WRONG_INPUT_LENGTH_MSG);
+        exit(EXIT_FAILURE);
+    }
+}
+
+
 /**
  *
  * @param RootIndex int representing the root key
@@ -218,11 +218,11 @@ void printResults(int RootIndex, int Vnum, int minPath, int maxPath, int Diamete
     printf("%s %d\n", MINIMAL_BRANCH, minPath);
     printf("%s %d\n", MAXIMAL_BRANCH, maxPath);
     printf("%s %d\n", DIAMETER, Diameter);
-    printf("%s %d %s %d: %d ", SHORT, V1, AND, V2, V1);
+    printf("%s %d %s %d: %d", SHORT, V1, AND, V2, V1);
     int u = V1;
     for (int m = 0; m < vertices[V1].bfsDist; ++m)
     {
-        printf("%d ", vertices[u].prev);
+        printf(" %d", vertices[u].prev);
         u = vertices[u].prev;
     }
     printf("%c", END_OF_LINE);
@@ -238,8 +238,12 @@ void freeMem(struct Vertex * vertices, int Vnum, FILE * ptr)
 {
     for (int i = 0; i < Vnum; i++)
     {
-        free(vertices[i].children);
-        vertices[i].children = NULL;
+        if (vertices[i].children != NULL)
+        {
+            free(vertices[i].children);
+            vertices[i].children = NULL;
+        }
+
     }
     free(vertices);
     fclose(ptr);
@@ -250,23 +254,23 @@ void freeMem(struct Vertex * vertices, int Vnum, FILE * ptr)
  * @param ver String
  * @return 0 if valid 1 if parse is not
  */
-int verticesAmountValidity(const char *ver)
+void verticesAmountValidity(const char *ver)
 {
     for (int i = 0; i < (int) strlen(ver); ++i)
     {
         if (isdigit(ver[i]) == 0 && ver[i] != END_OF_LINE)
         {
-
-            return 1;
+            fprintf(stderr, INVALID_INPUT);
+            exit(EXIT_FAILURE);
         }
     }
     char *eptr;
     int vertex = (int) strtol(ver, &eptr, 10);
     if (vertex < 0)
     {
-        return 1;
+        fprintf(stderr, INVALID_INPUT);
+        exit(EXIT_FAILURE);
     }
-    return 0;
 }
 
 /**
@@ -279,38 +283,48 @@ int verticesAmountValidity(const char *ver)
  */
 int childrenParse(char *ver, struct Vertex *vertices, int index, int Vnum) //must handle end of line
 {
-    int* children = NULL;
-    children = (int*) malloc(Vnum * sizeof(int));
-    if (children == NULL)
-    {
+    int *children = NULL;
+    children = (int *) malloc(Vnum * sizeof(int));
+    if (children == NULL) {
         fprintf(stderr, "Memory allocation problem");
         return EXIT_FAILURE;
     }
-    if (strcmp(ver, IS_LEAF_1) == 0 || strcmp(ver, IS_LEAF_2) == 0)
-    {
+    if (strcmp(ver, EMPTY_LINE) == 0) {
+        free(children);
+        return 1;
+    }
+    ver[strcspn(ver, END_OF_LINE_2)] = 0; // remove end of line
+    if (strcmp(ver, IS_LEAF_1) == 0 || strcmp(ver, IS_LEAF_2) == 0) {
         setAsLeaf(&vertices[index]); // set one node to be a leaf
         free(children);
         return 0;
     }
-    char *eptr = ver;
+    char *crop;
+    crop = strtok(ver, SPACE);
+    int child;
     int ind = 0;
-    for (int i = 0; i < (int) strlen(ver); ++i)
+    while (crop != NULL)
     {
-        while(ver[i] != ' ' && ver[i] != END_OF_LINE)
+        if (validatedVertex(crop))
         {
-            if(ver[i] == '\0')
-            {
-                break;
-            }
-            if(isdigit(ver[i]) == 0)
-            {
-                return 1;
-            }
-            i++;
+            free(children);
+            return 1;
         }
-        int child = (int) strtol(eptr, &eptr, 10);
+        child = strtol(crop, NULL, 10);
+        if (child == 0 && *crop != 48)
+        {
+            free(children);
+            return 1;
+        }
+        if (child >= Vnum || child < 0 || vertices[child].father != DEFAULT_FATHER) // checks if vertex in scope + if it doesn't have a father
+        {
+            free(children);
+            return 1;
+        }
+        vertices[child].father = index;
         children[ind] = child;
         ind++;
+        crop = strtok(NULL, SPACE);
     }
     vertices[index].isLeaf = 0;
     vertices[index].children = children;
@@ -513,4 +527,51 @@ int BFS(struct Vertex *vertices, int s, int Vnum)
     }
     free(q);
     return 0;
+}
+
+/**
+ * Helps parser with non digit char
+ * @param vertex
+ * @return
+ */
+int validatedVertex(char * vertex)
+{
+    for (int i = 0; i < (int) strlen(vertex); ++i)
+    {
+        if(!isdigit(vertex[i]))
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/**
+ * checks if a given vertex in scope or not
+ * @param Vnum amount of nodes in Graph
+ * @param Vertex the given parsed vertex
+ */
+void inScope(int Vnum, int Vertex)
+{
+    if(Vertex < 0 || Vertex >= Vnum)
+    {
+        fprintf(stderr, INVALID_INPUT);
+        exit(EXIT_FAILURE);
+    }
+}
+
+/**
+ * Initiating values into all vertices
+ * @param vertices array of nodes
+ * @param Vnum number of nodes in Graph
+ */
+void initiatingValues(struct Vertex * vertices, int Vnum)
+{
+    for (int m = 0; m < Vnum; ++m) {
+        vertices[m].children = NULL;
+        vertices[m].father = DEFAULT_FATHER;
+        vertices[m].prev = PREV;
+        vertices[m].distanceFromRoot = NONE;
+        vertices[m].isRoot = NOT_ROOT;
+    }
 }
